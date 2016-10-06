@@ -31,8 +31,13 @@ import static org.artifactory.repo.RepoPathFactory.create
 
 download {
     beforeDownloadRequest { Request request, RepoPath repoPath ->
-        //
-        if ( request.getParameter("url") == null ) {
+        /*
+        In the following cases this plugin will not be activated:
+            - if url query parameter is missing
+            - if the request if not directed to local repository
+            - if the requested file already exists locally (based on the path, not checksum)
+        */
+        if ( request.getParameter("url") == null ) { 
             return 0
         } else if ( !isLocal(repoPath.repoKey) ) {
             log.trace("Only local repositories can be used for dynamic caching")
